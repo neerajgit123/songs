@@ -44,8 +44,13 @@ class AudioFileView(generics.GenericAPIView):
 
     def post(self, request, audio_type):
         request_data = json.loads(request.data.get("audioFileMetadata"))
+        if audio_type.lower() not in ['mp3', 'wav', 'amr', 'wma']:
+            return Response(
+                {"detail": "File type support only mp3, wav, amr, wma"},
+                status=HTTP_400_BAD_REQUEST,
+            )
+        
         request_data["audio_file_type"] = audio_type.lower()
-
         serializer = self.get_serializer(data=request_data)
         if serializer.is_valid():
             serializer.save()
